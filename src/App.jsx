@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 const initialProducts = [
   { id: 1,  name: "Pilsner Urquell 0,5l",        category: "Pivo",     price: 29,  emoji: "🍺", img: "https://www.pilsnerurquell.com/sites/pilsnerurquell/files/2023-09/PU_bottle_500ml.png" },
@@ -624,6 +625,7 @@ export default function App() {
           </div>
         </div>
       </div>
+      <Analytics />
     </div>
   );
 
@@ -647,6 +649,7 @@ export default function App() {
             </button>
           </div>
         </div>
+        <Analytics />
       </div>
     );
 
@@ -706,6 +709,7 @@ export default function App() {
             </button>
           </div>
         </div>
+        <Analytics />
       </div>
     );
   }
@@ -855,6 +859,7 @@ export default function App() {
           </div>
         </div>
       </div>
+      <Analytics />
     </div>
   );
 }
