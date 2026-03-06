@@ -1,3 +1,4 @@
+import { supabase } from "./supabase";
 import { useState, useEffect } from "react";
 
 const initialProducts = [
@@ -559,8 +560,17 @@ export default function App() {
     setNewProduct({ name: "", category: "", price: "", emoji: "🛒" });
   };
 
-  const sendOrder = () => {
+  const sendOrder = async () => {
     if (!orderInfo.name || !orderInfo.payment) return;
+    const { error } = await supabase.from("orders").insert({
+      name: orderInfo.name,
+      address: orderInfo.address,
+      phone: orderInfo.phone,
+      payment: orderInfo.payment,
+      items: cart,
+      total: total,
+    });
+    if (error) { alert("Chyba při odesílání: " + error.message); return; }
     setOrderSent(true);
     setCart([]);
   };
