@@ -534,6 +534,78 @@ const css = `
     cursor: pointer; transition: background 0.15s; font-family: 'DM Sans', sans-serif;
   }
   .vp-del-btn:hover { background: rgba(224,85,85,0.2); }
+
+  /* ── MOBILE ─────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .vp-wrap { padding: 0 16px; }
+
+    .vp-header { padding: 18px 0 16px; }
+    .vp-logo { font-size: 20px; }
+    .vp-badge { font-size: 9px; padding: 3px 8px; letter-spacing: 0.1em; }
+
+    .vp-hero { padding: 32px 0 24px; }
+    .vp-hero-title { font-size: clamp(28px, 8vw, 42px); }
+    .vp-hero-sub { font-size: 13px; }
+    .vp-delivery-info {
+      flex-wrap: wrap; gap: 8px; padding: 10px 16px;
+      font-size: 12px;
+    }
+
+    .vp-cats { gap: 6px; padding: 20px 0 0; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+    .vp-cat { padding: 7px 14px; font-size: 12px; flex-shrink: 0; }
+
+    .vp-main { flex-direction: column; padding: 20px 0 100px; gap: 0; }
+
+    .vp-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .vp-card { padding: 14px; gap: 8px; }
+    .vp-card-img, .vp-card-img-placeholder { height: 110px; }
+    .vp-card-img-placeholder span { font-size: 48px !important; }
+    .vp-card-name { font-size: 12px; }
+    .vp-card-price { font-size: 17px; }
+    .vp-add { width: 30px; height: 30px; font-size: 16px; }
+
+    /* Cart hidden on mobile, shown as bottom sheet when items added */
+    .vp-cart {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      width: 100%; border-radius: 20px 20px 0 0;
+      z-index: 100; padding: 20px 16px;
+      max-height: 70vh; overflow-y: auto;
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.6);
+      transform: translateY(calc(100% - 68px));
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      border-bottom: none;
+    }
+    .vp-cart.open { transform: translateY(0); }
+    .vp-cart-header { cursor: pointer; padding-bottom: 4px; }
+    .vp-cart-header::before {
+      content: '';
+      display: block; width: 36px; height: 4px;
+      background: var(--border); border-radius: 2px;
+      margin: 0 auto 14px;
+    }
+
+    /* Checkout */
+    .vp-checkout-wrap { padding: 24px 0 80px; }
+    .vp-checkout-title { font-size: 26px; margin-bottom: 20px; }
+    .vp-section { padding: 16px; }
+    .vp-payment-options { flex-direction: column; gap: 8px; }
+
+    /* Closed banner */
+    .vp-closed-banner { flex-direction: column; gap: 10px; padding: 16px; text-align: center; }
+    .vp-closed-left { flex-direction: column; align-items: center; text-align: center; }
+
+    /* Success */
+    .vp-success { padding: 60px 16px; }
+    .vp-success-title { font-size: 26px; }
+  }
+
+  @media (max-width: 400px) {
+    .vp-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .vp-card-img, .vp-card-img-placeholder { height: 90px; }
+  }
 `;
 
 export default function App() {
@@ -545,6 +617,7 @@ export default function App() {
   const [orderSent, setOrderSent] = useState(false);
   const [orderInfo, setOrderInfo] = useState({ name: "", address: "", phone: "", payment: "" });
   const [open] = useState(isOpen());
+  const [cartOpen, setCartOpen] = useState(false);
 
   const FREE_DELIVERY = 500;
   const total = cart.reduce((s, i) => s + i.price, 0);
@@ -722,7 +795,7 @@ export default function App() {
             <div className="vp-badge" style={open ? {} : { color: "#e05555", background: "rgba(224,85,85,0.1)", borderColor: "rgba(224,85,85,0.25)" }}>
               {open ? "OTEVŘENO" : "ZAVŘENO"} · 20:00–5:00
             </div>
-            <button className="vp-admin-btn" onClick={() => setView("admin")}>⚙ Admin</button>
+
           </div>
         </header>
 
@@ -803,8 +876,8 @@ export default function App() {
             </div>
           </div>
 
-          <div className="vp-cart">
-            <div className="vp-cart-header">
+          <div className={`vp-cart${cartOpen ? " open" : ""}`}>
+            <div className="vp-cart-header" onClick={() => setCartOpen(!cartOpen)}>
               <div className="vp-cart-title">Košík</div>
               {cart.length > 0 && <div className="vp-cart-count">{cart.length}</div>}
             </div>
