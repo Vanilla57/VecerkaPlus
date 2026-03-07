@@ -774,10 +774,14 @@ export default function App() {
   };
 
   const fetchAddressSuggestions = async (input) => {
-    // Google Geocoding API nefunguje přímo z prohlížeče (CORS)
-    // Adresu zákazník zadá ručně
-    setAddressSuggestions([]);
-  };
+  if (input.length < 3) { setAddressSuggestions([]); setAddressError(""); return; }
+  try {
+    const res = await fetch(`/api/geocode?input=${encodeURIComponent(input)}`);
+    const data = await res.json();
+    setAddressSuggestions(data.suggestions || []);
+    setShowSuggestions((data.suggestions || []).length > 0);
+  } catch { setAddressSuggestions([]); }
+};
 
   const selectAddress = (suggestion) => {
     const dist = getDistanceKm(FM_LAT, FM_LNG, suggestion.lat, suggestion.lng);
