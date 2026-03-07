@@ -731,6 +731,8 @@ export default function App() {
   const [cart, setCart] = useState(() => { try { return JSON.parse(localStorage.getItem("vp_cart") || "[]"); } catch { return []; } });
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [addressError, setAddressError] = useState("");
+  const [addressChecked, setAddressChecked] = useState(false);
   const [activeCat, setActiveCat] = useState("Vše");
   const [newProduct, setNewProduct] = useState({ name: "", category: "", price: "", emoji: "🛒", img: "" });
   const [orderSent, setOrderSent] = useState(false);
@@ -758,17 +760,46 @@ export default function App() {
     localStorage.setItem("vp_cart", JSON.stringify(cart));
   }, [cart]);
 
+  const FM_LAT = 49.6833;
+  const FM_LNG = 18.3667;
+  const MAX_KM = 20;
+  const API_KEY = "AIzaSyC8EhWAIi2-BBQDEdTcBMoCoynvZ19Gd3s";
+
+  const getDistanceKm = (lat1, lng1, lat2, lng2) => {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  };
+
   const fetchAddressSuggestions = async (input) => {
-    if (input.length < 3) { setAddressSuggestions([]); return; }
+    if (input.length < 3) { setAddressSuggestions([]); setAddressError(""); setAddressChecked(false); return; }
     try {
       const res = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(input + " Frýdek-Místek")}&components=locality:Frýdek-Místek|country:CZ&key=AIzaSyC8EhWAIi2-BBQDEdTcBMoCoynvZ19Gd3s`
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(input)}&components=country:CZ&key=${API_KEY}`
       );
       const data = await res.json();
-      const suggestions = (data.results || []).map(r => r.formatted_address).slice(0, 5);
+      const suggestions = (data.results || []).map(r => ({
+        label: r.formatted_address,
+        lat: r.geometry.location.lat,
+        lng: r.geometry.location.lng,
+      })).slice(0, 5);
       setAddressSuggestions(suggestions);
       setShowSuggestions(suggestions.length > 0);
     } catch { setAddressSuggestions([]); }
+  };
+
+  const selectAddress = (suggestion) => {
+    const dist = getDistanceKm(FM_LAT, FM_LNG, suggestion.lat, suggestion.lng);
+    setOrderInfo({ ...orderInfo, address: suggestion.label });
+    setShowSuggestions(false);
+    setAddressChecked(true);
+    if (dist > MAX_KM) {
+      setAddressError(`Tato adresa je ${Math.round(dist)} km od Frýdku-Místku. Doručujeme pouze do ${MAX_KM} km.`);
+    } else {
+      setAddressError("");
+    }
   };
 
   const addToCart = (p) => setCart([...cart, p]);
@@ -1072,14 +1103,17 @@ export default function App() {
               <input className="vp-input" placeholder="Jméno a příjmení" value={orderInfo.name}
                 onChange={(e) => setOrderInfo({ ...orderInfo, name: e.target.value })} />
               <div style={{ position: "relative" }}>
-                <input className="vp-input" placeholder="Adresa doručení — Frýdek‑Místek" value={orderInfo.address}
+                <input className="vp-input" placeholder="Zadejte adresu doručení" value={orderInfo.address}
                   onChange={(e) => {
                     setOrderInfo({ ...orderInfo, address: e.target.value });
+                    setAddressChecked(false);
+                    setAddressError("");
                     fetchAddressSuggestions(e.target.value);
                   }}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                   onFocus={() => addressSuggestions.length > 0 && setShowSuggestions(true)}
                   autoComplete="off"
+                  style={{ borderColor: addressError ? "rgba(224,85,85,0.5)" : undefined }}
                 />
                 {showSuggestions && addressSuggestions.length > 0 && (
                   <div style={{
@@ -1090,13 +1124,23 @@ export default function App() {
                     {addressSuggestions.map((s, i) => (
                       <div key={i}
                         style={{ padding: "10px 14px", fontSize: 13, color: "#f0ece4", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-                        onMouseDown={() => { setOrderInfo({ ...orderInfo, address: s }); setShowSuggestions(false); }}
-                        onMouseEnter={e => e.target.style.background = "rgba(212,175,106,0.1)"}
-                        onMouseLeave={e => e.target.style.background = "transparent"}
+                        onMouseDown={() => selectAddress(s)}
+                        onMouseEnter={e => e.currentTarget.style.background = "rgba(212,175,106,0.1)"}
+                        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
                       >
-                        📍 {s}
+                        📍 {s.label}
                       </div>
                     ))}
+                  </div>
+                )}
+                {addressError && (
+                  <div style={{ color: "#e05555", fontSize: 12, marginTop: 6, padding: "8px 12px", background: "rgba(224,85,85,0.08)", borderRadius: 8, border: "1px solid rgba(224,85,85,0.2)" }}>
+                    ⚠️ {addressError}
+                  </div>
+                )}
+                {addressChecked && !addressError && orderInfo.address && (
+                  <div style={{ color: "#5bc4a0", fontSize: 12, marginTop: 6 }}>
+                    ✓ Adresa je v rozvozové oblasti
                   </div>
                 )}
               </div>
@@ -1156,7 +1200,7 @@ export default function App() {
             </div>
 
             <button className="vp-order-btn"
-              disabled={!orderInfo.name || !orderInfo.payment || !gdprConsent}
+              disabled={!orderInfo.name || !orderInfo.payment || !gdprConsent || !!addressError}
               onClick={sendOrder}>
               Odeslat objednávku →
             </button>
