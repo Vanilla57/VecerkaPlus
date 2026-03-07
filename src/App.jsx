@@ -738,7 +738,10 @@ export default function App() {
   const [gdprConsent, setGdprConsent] = useState(false);
 
   const FREE_DELIVERY = 500;
+  const DELIVERY_FEE = 39;
   const total = cart.reduce((s, i) => s + i.price, 0);
+  const deliveryFee = total >= FREE_DELIVERY ? 0 : DELIVERY_FEE;
+  const totalWithDelivery = total + deliveryFee;
   const remaining = Math.max(0, FREE_DELIVERY - total);
   const progress = Math.min(100, (total / FREE_DELIVERY) * 100);
   useEffect(() => {
@@ -761,7 +764,7 @@ export default function App() {
       phone: orderInfo.phone,
       payment: orderInfo.payment,
       items: cart,
-      total: total,
+      total: totalWithDelivery,
     });
     if (error) { alert("Chyba při odesílání: " + error.message); return; }
 
@@ -775,7 +778,7 @@ export default function App() {
       body: JSON.stringify({
         from: "VečerkaPlus <info@vecerkaplus.cz>",
         to: "info@vecerkaplus.cz",
-        subject: `🛵 Nová objednávka — ${orderInfo.name} — ${total} Kč`,
+        subject: `🛵 Nová objednávka — ${orderInfo.name} — ${totalWithDelivery} Kč`,
         html: `
           <h2>Nová objednávka</h2>
           <p><b>Jméno:</b> ${orderInfo.name}</p>
@@ -785,8 +788,9 @@ export default function App() {
           <hr/>
           <h3>Položky:</h3>
           ${cart.map(i => `<p>${i.emoji} ${i.name} — ${i.price} Kč</p>`).join("")}
+          <p>🛵 Dopravné: ${deliveryFee === 0 ? "zdarma" : deliveryFee + " Kč"}</p>
           <hr/>
-          <h3>Celkem: ${total} Kč</h3>
+          <h3>Celkem: ${totalWithDelivery} Kč</h3>
         `
       })
     });
@@ -939,6 +943,15 @@ export default function App() {
               <span className="vp-cart-total-label">Celkem</span>
               <span className="vp-cart-total-sum">{total} Kč</span>
             </div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: deliveryFee === 0 ? "#5bc4a0" : "var(--muted)", marginTop: 6 }}>
+              <span>Dopravné</span>
+              <span>{deliveryFee === 0 ? "✓ Zdarma" : `${deliveryFee} Kč`}</span>
+            </div>
+            {deliveryFee > 0 && (
+              <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 4, textAlign: "right" }}>
+                Doprava zdarma od 500 Kč · chybí {remaining} Kč
+              </div>
+            )}
           </div>
           <button className="vp-order-btn" style={{ marginTop: 16 }} onClick={() => setView("checkout")}>
             Pokračovat k objednávce →
@@ -1074,7 +1087,11 @@ export default function App() {
               ))}
               <div className="vp-summary-total">
                 <span>Celkem k úhradě</span>
-                <span>{total} Kč</span>
+                <span>{totalWithDelivery} Kč</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: deliveryFee === 0 ? "#5bc4a0" : "var(--muted)", marginTop: 8 }}>
+                <span>Dopravné</span>
+                <span>{deliveryFee === 0 ? "✓ Zdarma" : `${deliveryFee} Kč`}</span>
               </div>
             </div>
 
@@ -1242,8 +1259,16 @@ export default function App() {
                   <div className="vp-free-delivery-badge">✓ Doprava zdarma!</div>
                 )}
                 <div className="vp-cart-total">
-                  <span className="vp-cart-total-label">Celkem</span>
-                  <span className="vp-cart-total-sum">{total} Kč</span>
+                  <span className="vp-cart-total-label">Zboží</span>
+                  <span className="vp-cart-total-sum" style={{ fontSize: 18 }}>{total} Kč</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: deliveryFee === 0 ? "#5bc4a0" : "var(--muted)", marginBottom: 8 }}>
+                  <span>Dopravné</span>
+                  <span>{deliveryFee === 0 ? "✓ Zdarma" : `${deliveryFee} Kč`}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 16, color: "var(--gold)", marginBottom: 12 }}>
+                  <span>Celkem</span>
+                  <span>{totalWithDelivery} Kč</span>
                 </div>
                 <button className="vp-checkout-btn" onClick={() => setView("checkout")}>
                   Objednat →
@@ -1274,7 +1299,7 @@ export default function App() {
             <div className="vp-float-cart-count">{cart.length}</div>
             <span>Zobrazit košík</span>
           </div>
-          <span className="vp-float-cart-total">{total} Kč</span>
+          <span className="vp-float-cart-total">{totalWithDelivery} Kč</span>
         </button>
       )}
     </div>
