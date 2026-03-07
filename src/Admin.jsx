@@ -261,11 +261,12 @@ export default function Admin() {
   const cancelEdit = () => { setEditId(null); setEditData({}); };
 
   const saveEdit = async () => {
-    await supabase.from("products").update({
+    const { error } = await supabase.from("products").update({
       name: editData.name, category: editData.category,
-      price: Number(editData.price), emoji: editData.emoji, img: editData.img
+      price: Number(editData.price), emoji: editData.emoji, img: editData.img || ""
     }).eq("id", editId);
-    setProducts(products.map(p => p.id === editId ? { ...p, ...editData, price: Number(editData.price) } : p));
+    if (error) { alert("Chyba při ukládání: " + error.message); return; }
+    await fetchProducts();
     cancelEdit();
   };
 
