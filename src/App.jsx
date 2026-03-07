@@ -68,7 +68,7 @@ function nextOpenIn() {
 }
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -131,8 +131,8 @@ const css = `
     border-bottom: 1px solid var(--border);
   }
   .vp-logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px; font-weight: 900;
+    font-family: 'Libre Baskerville', serif;
+    font-size: 26px; font-weight: 700;
     color: var(--gold);
     letter-spacing: -0.02em;
     display: flex; align-items: center; gap: 10px;
@@ -178,9 +178,9 @@ const css = `
     color: var(--gold); margin-bottom: 16px; font-weight: 500;
   }
   .vp-hero-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Libre Baskerville', serif;
     font-size: clamp(38px, 6vw, 64px);
-    font-weight: 900; line-height: 1.05;
+    font-weight: 700; line-height: 1.05;
     color: var(--text);
     margin-bottom: 16px;
   }
@@ -254,7 +254,7 @@ const css = `
   .vp-closed-title { font-size: 15px; font-weight: 700; color: #f0ede8; margin-bottom: 2px; }
   .vp-closed-sub { font-size: 12px; color: #6b6878; }
   .vp-closed-time {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Libre Baskerville', serif;
     font-size: 22px; font-weight: 700; color: var(--gold);
     white-space: nowrap;
   }
@@ -344,7 +344,7 @@ const css = `
     margin-top: 4px;
   }
   .vp-card-price {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Libre Baskerville', serif;
     font-size: 20px; font-weight: 700;
     color: var(--gold);
   }
@@ -377,7 +377,7 @@ const css = `
     margin-bottom: 20px;
   }
   .vp-cart-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Libre Baskerville', serif;
     font-size: 20px; font-weight: 700; color: var(--text);
   }
   .vp-cart-count {
@@ -414,7 +414,7 @@ const css = `
   }
   .vp-cart-total-label { font-size: 13px; color: var(--muted); }
   .vp-cart-total-sum {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Libre Baskerville', serif;
     font-size: 26px; font-weight: 700; color: var(--gold);
   }
   .vp-checkout-btn {
@@ -440,8 +440,8 @@ const css = `
   }
   .vp-back:hover { color: var(--gold); }
   .vp-checkout-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 36px; font-weight: 900; color: var(--text);
+    font-family: 'Libre Baskerville', serif;
+    font-size: 36px; font-weight: 700; color: var(--text);
     margin-bottom: 32px;
   }
   .vp-section {
@@ -477,7 +477,7 @@ const css = `
   .vp-summary-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; color: var(--muted); }
   .vp-summary-total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 14px; border-top: 1px solid var(--border); margin-top: 6px; }
   .vp-summary-total span:first-child { font-size: 14px; color: var(--text); font-weight: 600; }
-  .vp-summary-total span:last-child { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--gold); }
+  .vp-summary-total span:last-child { font-family: 'Libre Baskerville', serif; font-size: 28px; color: var(--gold); }
   .vp-order-btn {
     width: 100%; padding: 16px;
     background: linear-gradient(135deg, var(--gold) 0%, #b8923e 100%);
@@ -505,7 +505,7 @@ const css = `
     0%,100% { box-shadow: 0 0 40px rgba(212,175,106,0.2); }
     50% { box-shadow: 0 0 60px rgba(212,175,106,0.4); }
   }
-  .vp-success-title { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--text); margin-bottom: 12px; }
+  .vp-success-title { font-family: 'Libre Baskerville', serif; font-size: 36px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
   .vp-success-sub { color: var(--muted); font-size: 15px; line-height: 1.6; margin-bottom: 40px; }
   .vp-success-eta {
     display: inline-flex; align-items: center; gap: 8px;
@@ -527,7 +527,7 @@ const css = `
   .vp-row-name { font-size: 13px; font-weight: 600; color: var(--text); }
   .vp-row-cat { font-size: 10px; color: var(--muted); letter-spacing: 0.05em; }
   .vp-row-right { display: flex; align-items: center; gap: 12px; }
-  .vp-row-price { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--gold); }
+  .vp-row-price { font-family: 'Libre Baskerville', serif; font-size: 16px; color: var(--gold); }
   .vp-del-btn {
     background: rgba(224,85,85,0.1); color: var(--danger);
     border: 1px solid rgba(224,85,85,0.2); border-radius: 6px;
@@ -603,8 +603,8 @@ const css = `
   /* CART PAGE (mobile view="cart") */
   .vp-cart-page { max-width: 540px; margin: 0 auto; padding: 24px 0 60px; }
   .vp-cart-page-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 32px; font-weight: 900; color: var(--text); margin-bottom: 24px;
+    font-family: 'Libre Baskerville', serif;
+    font-size: 32px; font-weight: 700; color: var(--text); margin-bottom: 24px;
   }
 
   /* AGE VERIFICATION */
@@ -630,8 +630,8 @@ const css = `
     box-shadow: 0 32px 80px rgba(0,0,0,0.6);
   }
   .vp-age-icon { font-size: 56px; margin-bottom: 8px; filter: drop-shadow(0 4px 16px rgba(212,175,106,0.3)); }
-  .vp-age-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--gold); margin-bottom: 28px; }
-  .vp-age-title { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--text); line-height: 1.1; margin-bottom: 12px; }
+  .vp-age-logo { font-family: 'Libre Baskerville', serif; font-size: 22px; font-weight: 700; color: var(--gold); margin-bottom: 28px; }
+  .vp-age-title { font-family: 'Libre Baskerville', serif; font-size: 36px; font-weight: 700; color: var(--text); line-height: 1.1; margin-bottom: 12px; }
   .vp-age-sub { color: var(--muted); font-size: 14px; font-weight: 300; line-height: 1.6; margin-bottom: 36px; }
   .vp-age-btns { display: flex; gap: 12px; }
   .vp-age-yes {
@@ -660,7 +660,7 @@ const css = `
     display: flex; flex-direction: column; align-items: center;
     gap: 16px; margin-top: 40px;
   }
-  .vp-footer-logo { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: var(--gold); }
+  .vp-footer-logo { font-family: 'Libre Baskerville', serif; font-size: 18px; font-weight: 700; color: var(--gold); }
   .vp-footer-links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
   .vp-footer-link { color: var(--muted); font-size: 13px; cursor: pointer; text-decoration: none; transition: color 0.2s; }
   .vp-footer-link:hover { color: var(--gold); }
@@ -668,7 +668,7 @@ const css = `
 
   /* LEGAL / CONTACT PAGES */
   .vp-legal-wrap { max-width: 700px; margin: 0 auto; padding: 32px 24px 80px; }
-  .vp-legal-title { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; color: var(--text); margin-bottom: 8px; }
+  .vp-legal-title { font-family: 'Libre Baskerville', serif; font-size: 32px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
   .vp-legal-sub { color: var(--muted); font-size: 13px; margin-bottom: 32px; }
   .vp-legal-section { margin-bottom: 28px; }
   .vp-legal-h { font-size: 15px; font-weight: 700; color: var(--gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -716,7 +716,7 @@ const css = `
   }
   .vp-gdpr-checkbox:checked::after {
     content: '✓'; position: absolute; color: #0a0a0f;
-    font-size: 12px; font-weight: 900;
+    font-size: 12px; font-weight: 700;
   }
   .vp-gdpr-text { font-size: 12px; color: var(--muted); line-height: 1.6; }
   .vp-gdpr-text a { color: var(--gold); cursor: pointer; }
@@ -991,7 +991,7 @@ export default function App() {
           <button className="vp-admin-btn" onClick={() => setView("shop")}>← Zpět do obchodu</button>
         </header>
         <div className="vp-admin-wrap">
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 36, fontWeight: 900, color: "var(--text)", marginBottom: 4 }}>Správa produktů</h1>
+          <h1 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 36, fontWeight: 900, color: "var(--text)", marginBottom: 4 }}>Správa produktů</h1>
           <p style={{ color: "var(--muted)", fontSize: 13 }}>Přidávejte a mažte produkty z nabídky</p>
           <div className="vp-admin-grid">
             <div className="vp-section">
