@@ -176,6 +176,15 @@ const css = `
   .adm-prod-price { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--gold); margin-right: 12px; }
   .adm-prod-del { background: rgba(224,85,85,0.1); color: var(--red); border: 1px solid rgba(224,85,85,0.2); border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 700; cursor: pointer; transition: background 0.15s; font-family: 'DM Sans', sans-serif; }
   .adm-prod-del:hover { background: rgba(224,85,85,0.25); }
+  .adm-prod-edit { background: rgba(212,175,106,0.1); color: var(--gold); border: 1px solid rgba(212,175,106,0.2); border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 700; cursor: pointer; transition: background 0.15s; font-family: 'DM Sans', sans-serif; margin-right: 6px; }
+  .adm-prod-edit:hover { background: rgba(212,175,106,0.2); }
+  .adm-edit-row { padding: 14px 20px; border-bottom: 1px solid var(--border); background: rgba(212,175,106,0.04); }
+  .adm-edit-row:last-child { border-bottom: none; }
+  .adm-edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .adm-edit-actions { display: flex; gap: 8px; }
+  .adm-save-btn { flex: 1; padding: 8px; background: var(--gold); color: #0a0a0f; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .adm-cancel-btn { padding: 8px 14px; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .adm-cancel-btn:hover { color: var(--red); border-color: var(--red); }
 
   .adm-add-form { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
   .adm-input { width: 100%; padding: 11px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none; margin-bottom: 10px; transition: border-color 0.2s; }
@@ -243,6 +252,21 @@ export default function Admin() {
     if (error) { alert("Chyba: " + error.message); return; }
     setProducts([...products, data[0]]);
     setNewProd({ name: "", category: "", price: "", emoji: "🛒", img: "" });
+  };
+
+  const [editId, setEditId]     = useState(null);
+  const [editData, setEditData] = useState({});
+
+  const startEdit = (p) => { setEditId(p.id); setEditData({ name: p.name, category: p.category, price: p.price, emoji: p.emoji, img: p.img || "" }); };
+  const cancelEdit = () => { setEditId(null); setEditData({}); };
+
+  const saveEdit = async () => {
+    await supabase.from("products").update({
+      name: editData.name, category: editData.category,
+      price: Number(editData.price), emoji: editData.emoji, img: editData.img
+    }).eq("id", editId);
+    setProducts(products.map(p => p.id === editId ? { ...p, ...editData, price: Number(editData.price) } : p));
+    cancelEdit();
   };
 
   const deleteProduct = async (id) => {
@@ -323,6 +347,28 @@ export default function Admin() {
                   ) : products.length === 0 ? (
                     <div style={{ padding: 24, textAlign: "center", color: "var(--muted)" }}>Žádné produkty v databázi</div>
                   ) : products.map(p => (
+                    editId === p.id ? (
+                      <div key={p.id} className="adm-edit-row">
+                        <div className="adm-edit-grid">
+                          <input className="adm-input" value={editData.name} placeholder="Název"
+                            onChange={e => setEditData({...editData, name: e.target.value})} />
+                          <select className="adm-input" value={editData.category}
+                            onChange={e => setEditData({...editData, category: e.target.value})}>
+                            {["Pivo","Lihoviny","Víno","Nealko","Jídlo","Tabák"].map(c => <option key={c} value={c}>{c}</option>)}
+                          </select>
+                          <input className="adm-input" type="number" value={editData.price} placeholder="Cena"
+                            onChange={e => setEditData({...editData, price: e.target.value})} />
+                          <input className="adm-input" value={editData.emoji} placeholder="Emoji"
+                            onChange={e => setEditData({...editData, emoji: e.target.value})} />
+                        </div>
+                        <input className="adm-input" value={editData.img} placeholder="URL obrázku"
+                          onChange={e => setEditData({...editData, img: e.target.value})} style={{ marginBottom: 8 }} />
+                        <div className="adm-edit-actions">
+                          <button className="adm-save-btn" onClick={saveEdit}>✓ Uložit</button>
+                          <button className="adm-cancel-btn" onClick={cancelEdit}>Zrušit</button>
+                        </div>
+                      </div>
+                    ) : (
                     <div key={p.id} className="adm-product-row">
                       <div className="adm-prod-left">
                         <span className="adm-prod-emoji">{p.emoji}</span>
@@ -333,9 +379,11 @@ export default function Admin() {
                       </div>
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <span className="adm-prod-price">{p.price} Kč</span>
+                        <button className="adm-prod-edit" onClick={() => startEdit(p)}>✎ Upravit</button>
                         <button className="adm-prod-del" onClick={() => deleteProduct(p.id)}>Smazat</button>
                       </div>
                     </div>
+                    )
                   ))}
                 </div>
               </div>
