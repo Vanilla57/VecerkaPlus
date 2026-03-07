@@ -774,20 +774,9 @@ export default function App() {
   };
 
   const fetchAddressSuggestions = async (input) => {
-    if (input.length < 3) { setAddressSuggestions([]); setAddressError(""); setAddressChecked(false); return; }
-    try {
-      const res = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(input)}&components=country:CZ&key=${API_KEY}`
-      );
-      const data = await res.json();
-      const suggestions = (data.results || []).map(r => ({
-        label: r.formatted_address,
-        lat: r.geometry.location.lat,
-        lng: r.geometry.location.lng,
-      })).slice(0, 5);
-      setAddressSuggestions(suggestions);
-      setShowSuggestions(suggestions.length > 0);
-    } catch { setAddressSuggestions([]); }
+    // Google Geocoding API nefunguje přímo z prohlížeče (CORS)
+    // Adresu zákazník zadá ručně
+    setAddressSuggestions([]);
   };
 
   const selectAddress = (suggestion) => {
@@ -1200,7 +1189,7 @@ export default function App() {
             </div>
 
             <button className="vp-order-btn"
-              disabled={!orderInfo.name || !orderInfo.payment || !gdprConsent || !!addressError}
+              disabled={!orderInfo.name || !orderInfo.payment || !gdprConsent}
               onClick={sendOrder}>
               Odeslat objednávku →
             </button>
