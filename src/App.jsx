@@ -695,6 +695,32 @@ const css = `
   .vp-gopay-btn:hover { box-shadow: 0 8px 32px rgba(0,119,204,0.5); transform: translateY(-1px); }
   .vp-gopay-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   .vp-gopay-note { font-size: 11px; color: var(--muted); text-align: center; margin-top: 8px; }
+
+  /* GDPR CHECKBOX */
+  .vp-gdpr-wrap {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 16px; margin: 8px 0 16px;
+    background: var(--surface2); border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .vp-gdpr-wrap.checked { border-color: rgba(212,175,106,0.3); }
+  .vp-gdpr-checkbox {
+    width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0; margin-top: 1px;
+    border: 2px solid rgba(255,255,255,0.15); background: transparent;
+    cursor: pointer; appearance: none; -webkit-appearance: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; position: relative;
+  }
+  .vp-gdpr-checkbox:checked {
+    background: var(--gold); border-color: var(--gold);
+  }
+  .vp-gdpr-checkbox:checked::after {
+    content: '✓'; position: absolute; color: #0a0a0f;
+    font-size: 12px; font-weight: 900;
+  }
+  .vp-gdpr-text { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .vp-gdpr-text a { color: var(--gold); cursor: pointer; }
+  .vp-gdpr-text a:hover { text-decoration: underline; }
 `;
 
 export default function App() {
@@ -709,6 +735,7 @@ export default function App() {
   const [orderInfo, setOrderInfo] = useState({ name: "", address: "", phone: "", payment: "" });
   const [open] = useState(isOpen());
   const [ageVerified, setAgeVerified] = useState(() => sessionStorage.getItem("vp_age") === "1");
+  const [gdprConsent, setGdprConsent] = useState(false);
 
   const FREE_DELIVERY = 500;
   const total = cart.reduce((s, i) => s + i.price, 0);
@@ -1051,8 +1078,22 @@ export default function App() {
               </div>
             </div>
 
+            <div className={`vp-gdpr-wrap${gdprConsent ? " checked" : ""}`}>
+              <input
+                type="checkbox"
+                className="vp-gdpr-checkbox"
+                id="gdpr"
+                checked={gdprConsent}
+                onChange={(e) => setGdprConsent(e.target.checked)}
+              />
+              <label htmlFor="gdpr" className="vp-gdpr-text">
+                Souhlasím se zpracováním osobních údajů (jméno, adresa, telefon) za účelem doručení objednávky.
+                Beru na vědomí <a onClick={() => navigate("/podminky")}>zásady ochrany osobních údajů</a>.
+              </label>
+            </div>
+
             <button className="vp-order-btn"
-              disabled={!orderInfo.name || !orderInfo.payment}
+              disabled={!orderInfo.name || !orderInfo.payment || !gdprConsent}
               onClick={sendOrder}>
               Odeslat objednávku →
             </button>
