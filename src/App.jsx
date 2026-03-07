@@ -842,7 +842,6 @@ export default function App() {
             <div className="vp-badge" style={open ? {} : { color: "#e05555", background: "rgba(224,85,85,0.1)", borderColor: "rgba(224,85,85,0.25)" }}>
               {open ? "OTEVŘENO" : "ZAVŘENO"} · 20:00–5:00
             </div>
-            <button className="vp-admin-btn" onClick={() => setView("admin")}>⚙ Admin</button>
           </div>
         </header>
 
