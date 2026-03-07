@@ -609,7 +609,8 @@ const css = `
 
 export default function App() {
   const [view, setView] = useState("shop");
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
   const [cart, setCart] = useState([]);
   const [activeCat, setActiveCat] = useState("Vše");
   const [newProduct, setNewProduct] = useState({ name: "", category: "", price: "", emoji: "🛒", img: "" });
@@ -621,6 +622,14 @@ export default function App() {
   const total = cart.reduce((s, i) => s + i.price, 0);
   const remaining = Math.max(0, FREE_DELIVERY - total);
   const progress = Math.min(100, (total / FREE_DELIVERY) * 100);
+  useEffect(() => {
+    supabase.from("products").select("*").order("category").then(({ data }) => {
+      if (data && data.length > 0) setProducts(data);
+      else setProducts(initialProducts); // fallback na lokální data
+      setProductsLoading(false);
+    });
+  }, []);
+
   const addToCart = (p) => setCart([...cart, p]);
   const removeFromCart = (i) => setCart(cart.filter((_, idx) => idx !== i));
   const filtered = activeCat === "Vše" ? products : products.filter((p) => p.category === activeCat);
@@ -909,6 +918,11 @@ export default function App() {
             <div className="vp-section-label">
               {activeCat === "Vše" ? `Všechny produkty · ${filtered.length} položek` : `${activeCat} · ${filtered.length} položek`}
             </div>
+            {productsLoading ? (
+              <div style={{ textAlign: "center", padding: "60px 0", color: "var(--muted)", fontSize: 14 }}>
+                Načítám produkty...
+              </div>
+            ) : (
             <div className="vp-grid">
               {filtered.map((p) => {
                 const color = catAccent[p.category] || "#d4af6a";
@@ -941,6 +955,7 @@ export default function App() {
                 );
               })}
             </div>
+            )}
           </div>
 
           <div className="vp-cart">
