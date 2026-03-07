@@ -156,6 +156,43 @@ const css = `
   .adm-refresh:hover { border-color: var(--gold); color: var(--gold); }
 
   .adm-loading { text-align: center; padding: 60px; color: var(--muted); }
+
+  /* TABS */
+  .adm-tabs { display: flex; gap: 4px; margin-bottom: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px; width: fit-content; }
+  .adm-tab { padding: 8px 20px; border-radius: 9px; font-size: 13px; font-weight: 500; border: none; background: transparent; color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .adm-tab.active { background: var(--surface2); color: var(--gold); }
+
+  /* PRODUCTS */
+  .adm-products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .adm-section-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; font-weight: 600; }
+  .adm-product-list { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .adm-product-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+  .adm-product-row:last-child { border-bottom: none; }
+  .adm-product-row:hover { background: rgba(255,255,255,0.02); }
+  .adm-prod-left { display: flex; align-items: center; gap: 10px; }
+  .adm-prod-emoji { font-size: 22px; }
+  .adm-prod-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .adm-prod-cat { font-size: 11px; color: var(--muted); }
+  .adm-prod-price { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--gold); margin-right: 12px; }
+  .adm-prod-del { background: rgba(224,85,85,0.1); color: var(--red); border: 1px solid rgba(224,85,85,0.2); border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 700; cursor: pointer; transition: background 0.15s; font-family: 'DM Sans', sans-serif; }
+  .adm-prod-del:hover { background: rgba(224,85,85,0.25); }
+
+  .adm-add-form { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+  .adm-input { width: 100%; padding: 11px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none; margin-bottom: 10px; transition: border-color 0.2s; }
+  .adm-input:focus { border-color: var(--gold); }
+  .adm-input::placeholder { color: var(--muted); }
+  .adm-input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .adm-add-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--gold) 0%, #b8923e 100%); color: #0a0a0f; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity 0.2s; margin-top: 4px; }
+  .adm-add-btn:hover { opacity: 0.85; }
+  .adm-add-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  @media (max-width: 768px) {
+    .adm-content { padding: 20px 16px; }
+    .adm-header { padding: 16px; }
+    .adm-products-grid { grid-template-columns: 1fr; }
+    .adm-stats { grid-template-columns: 1fr 1fr; }
+    .adm-table td, .adm-table th { padding: 12px 12px; }
+  }
 `;
 
 const STATUS_LABELS = ["nová", "přijatá", "doručená", "zrušená"];
@@ -168,6 +205,10 @@ export default function Admin() {
   const [orders, setOrders]     = useState([]);
   const [loading, setLoading]   = useState(false);
   const [filter, setFilter]     = useState("vše");
+  const [tab, setTab]           = useState("objednávky");
+  const [products, setProducts] = useState([]);
+  const [prodLoading, setProdLoading] = useState(false);
+  const [newProd, setNewProd]   = useState({ name: "", category: "", price: "", emoji: "🛒", img: "" });
 
   const login = () => {
     if (pw === ADMIN_PASSWORD) { setAuthed(true); }
@@ -184,7 +225,31 @@ export default function Admin() {
     setLoading(false);
   };
 
-  useEffect(() => { if (authed) fetchOrders(); }, [authed]);
+  useEffect(() => { if (authed) { fetchOrders(); fetchProducts(); } }, [authed]);
+
+  const fetchProducts = async () => {
+    setProdLoading(true);
+    const { data } = await supabase.from("products").select("*").order("category");
+    setProducts(data || []);
+    setProdLoading(false);
+  };
+
+  const addProduct = async () => {
+    if (!newProd.name || !newProd.price || !newProd.category) return;
+    const { data, error } = await supabase.from("products").insert({
+      name: newProd.name, category: newProd.category,
+      price: Number(newProd.price), emoji: newProd.emoji, img: newProd.img || ""
+    }).select();
+    if (error) { alert("Chyba: " + error.message); return; }
+    setProducts([...products, data[0]]);
+    setNewProd({ name: "", category: "", price: "", emoji: "🛒", img: "" });
+  };
+
+  const deleteProduct = async (id) => {
+    if (!confirm("Smazat produkt?")) return;
+    await supabase.from("products").delete().eq("id", id);
+    setProducts(products.filter(p => p.id !== id));
+  };
 
   const updateStatus = async (id, status) => {
     await supabase.from("orders").update({ status }).eq("id", id);
@@ -237,7 +302,78 @@ export default function Admin() {
       </div>
 
       <div className="adm-content">
-        {/* Stats */}
+        {/* Tabs */}
+        <div className="adm-tabs">
+          {["objednávky", "produkty"].map(t => (
+            <button key={t} className={`adm-tab${tab === t ? " active" : ""}`} onClick={() => setTab(t)}>
+              {t === "objednávky" ? "📋 Objednávky" : "🛒 Produkty"}
+            </button>
+          ))}
+        </div>
+
+        {tab === "produkty" ? (
+          <>
+            <div className="adm-products-grid">
+              {/* Seznam produktů */}
+              <div>
+                <div className="adm-section-title">Aktuální produkty ({products.length})</div>
+                <div className="adm-product-list">
+                  {prodLoading ? (
+                    <div style={{ padding: 24, textAlign: "center", color: "var(--muted)" }}>Načítám...</div>
+                  ) : products.length === 0 ? (
+                    <div style={{ padding: 24, textAlign: "center", color: "var(--muted)" }}>Žádné produkty v databázi</div>
+                  ) : products.map(p => (
+                    <div key={p.id} className="adm-product-row">
+                      <div className="adm-prod-left">
+                        <span className="adm-prod-emoji">{p.emoji}</span>
+                        <div>
+                          <div className="adm-prod-name">{p.name}</div>
+                          <div className="adm-prod-cat">{p.category}</div>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <span className="adm-prod-price">{p.price} Kč</span>
+                        <button className="adm-prod-del" onClick={() => deleteProduct(p.id)}>Smazat</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Přidat produkt */}
+              <div>
+                <div className="adm-section-title">Přidat nový produkt</div>
+                <div className="adm-add-form">
+                  <input className="adm-input" placeholder="Název produktu" value={newProd.name}
+                    onChange={e => setNewProd({...newProd, name: e.target.value})} />
+                  <div className="adm-input-row">
+                    <select className="adm-input" value={newProd.category}
+                      onChange={e => setNewProd({...newProd, category: e.target.value})}>
+                      <option value="">Kategorie...</option>
+                      {["Pivo","Lihoviny","Víno","Nealko","Jídlo","Tabák"].map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                    <input className="adm-input" placeholder="Cena (Kč)" type="number" value={newProd.price}
+                      onChange={e => setNewProd({...newProd, price: e.target.value})} />
+                  </div>
+                  <div className="adm-input-row">
+                    <input className="adm-input" placeholder="Emoji (např. 🍺)" value={newProd.emoji}
+                      onChange={e => setNewProd({...newProd, emoji: e.target.value})} />
+                    <input className="adm-input" placeholder="URL obrázku (volitelné)" value={newProd.img}
+                      onChange={e => setNewProd({...newProd, img: e.target.value})} />
+                  </div>
+                  <button className="adm-add-btn"
+                    disabled={!newProd.name || !newProd.price || !newProd.category}
+                    onClick={addProduct}>
+                    + Přidat produkt
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
         <div className="adm-stats">
           <div className="adm-stat">
             <div className="adm-stat-label">Celkem objednávek</div>
@@ -329,6 +465,9 @@ export default function Admin() {
               </tbody>
             </table>
           </div>
+          </div>
+        )}
+          </>
         )}
       </div>
     </div>
