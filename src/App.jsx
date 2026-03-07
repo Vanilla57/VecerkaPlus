@@ -938,7 +938,6 @@ export default function App() {
           <div className="vp-section">
             {cart.map((item, i) => (
               <div key={i} className="vp-cart-row" style={{ paddingBottom: 12, marginBottom: 12, borderBottom: "1px solid var(--border)" }}>
-                <span className="vp-cart-row-emoji">{item.emoji}</span>
                 <div className="vp-cart-row-info">
                   <div className="vp-cart-row-name">{item.name}</div>
                   <div className="vp-cart-row-price">{item.price} Kč</div>
@@ -1282,7 +1281,6 @@ export default function App() {
                 <div className="vp-cart-items">
                   {cart.map((item, i) => (
                     <div key={i} className="vp-cart-row">
-                      <span className="vp-cart-row-emoji">{item.emoji}</span>
                       <div className="vp-cart-row-info">
                         <div className="vp-cart-row-name">{item.name}</div>
                         <div className="vp-cart-row-price">{item.price} Kč</div>
