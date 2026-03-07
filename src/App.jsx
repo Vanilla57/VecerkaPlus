@@ -1128,7 +1128,7 @@ export default function App() {
               <div className="vp-section-title">Shrnutí objednávky</div>
               {cart.map((item, i) => (
                 <div key={i} className="vp-summary-row">
-                  <span>{item.emoji} {item.name}</span>
+                  <span>{item.name}</span>
                   <span>{item.price} Kč</span>
                 </div>
               ))}
