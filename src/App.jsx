@@ -535,76 +535,75 @@ const css = `
   }
   .vp-del-btn:hover { background: rgba(224,85,85,0.2); }
 
-  /* ── MOBILE ─────────────────────────────────────────── */
+  /* FLOATING CART BUTTON — mobile only */
+  .vp-float-cart {
+    display: none;
+  }
   @media (max-width: 768px) {
     .vp-wrap { padding: 0 16px; }
-
     .vp-header { padding: 18px 0 16px; }
     .vp-logo { font-size: 20px; }
     .vp-badge { font-size: 9px; padding: 3px 8px; letter-spacing: 0.1em; }
-
     .vp-hero { padding: 32px 0 24px; }
     .vp-hero-title { font-size: clamp(28px, 8vw, 42px); }
     .vp-hero-sub { font-size: 13px; }
-    .vp-delivery-info {
-      flex-wrap: wrap; gap: 8px; padding: 10px 16px;
-      font-size: 12px;
-    }
-
-    .vp-cats { gap: 6px; padding: 20px 0 0; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+    .vp-delivery-info { flex-wrap: wrap; gap: 8px; padding: 10px 16px; font-size: 12px; }
+    .vp-cats { gap: 6px; padding: 20px 0 4px; overflow-x: auto; flex-wrap: nowrap; }
     .vp-cat { padding: 7px 14px; font-size: 12px; flex-shrink: 0; }
-
     .vp-main { flex-direction: column; padding: 20px 0 100px; gap: 0; }
-
-    .vp-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
+    .vp-cart { display: none; }
+    .vp-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .vp-card { padding: 14px; gap: 8px; }
     .vp-card-img, .vp-card-img-placeholder { height: 110px; }
     .vp-card-img-placeholder span { font-size: 48px !important; }
     .vp-card-name { font-size: 12px; }
     .vp-card-price { font-size: 17px; }
     .vp-add { width: 30px; height: 30px; font-size: 16px; }
-
-    /* Cart hidden on mobile, shown as bottom sheet when items added */
-    .vp-cart {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      width: 100%; border-radius: 20px 20px 0 0;
-      z-index: 100; padding: 20px 16px;
-      max-height: 70vh; overflow-y: auto;
-      box-shadow: 0 -8px 40px rgba(0,0,0,0.6);
-      transform: translateY(calc(100% - 68px));
-      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-      border-bottom: none;
-    }
-    .vp-cart.open { transform: translateY(0); }
-    .vp-cart-header { cursor: pointer; padding-bottom: 4px; }
-    .vp-cart-header::before {
-      content: '';
-      display: block; width: 36px; height: 4px;
-      background: var(--border); border-radius: 2px;
-      margin: 0 auto 14px;
-    }
-
-    /* Checkout */
+    .vp-closed-banner { flex-direction: column; gap: 10px; padding: 16px; text-align: center; }
+    .vp-closed-left { flex-direction: column; align-items: center; }
     .vp-checkout-wrap { padding: 24px 0 80px; }
     .vp-checkout-title { font-size: 26px; margin-bottom: 20px; }
     .vp-section { padding: 16px; }
     .vp-payment-options { flex-direction: column; gap: 8px; }
-
-    /* Closed banner */
-    .vp-closed-banner { flex-direction: column; gap: 10px; padding: 16px; text-align: center; }
-    .vp-closed-left { flex-direction: column; align-items: center; text-align: center; }
-
-    /* Success */
     .vp-success { padding: 60px 16px; }
     .vp-success-title { font-size: 26px; }
-  }
 
+    /* Floating cart button */
+    .vp-float-cart {
+      display: flex; align-items: center; justify-content: space-between;
+      position: fixed; bottom: 20px; left: 16px; right: 16px;
+      background: linear-gradient(135deg, var(--gold) 0%, #b8923e 100%);
+      color: #0a0a0f; border: none; border-radius: 16px;
+      padding: 16px 20px; font-size: 15px; font-weight: 700;
+      font-family: 'DM Sans', sans-serif; cursor: pointer;
+      box-shadow: 0 8px 32px rgba(212,175,106,0.4);
+      z-index: 100; transition: all 0.2s;
+      animation: slideUp 0.3s ease;
+    }
+    .vp-float-cart:active { transform: scale(0.98); }
+    @keyframes slideUp {
+      from { transform: translateY(80px); opacity: 0; }
+      to   { transform: translateY(0);   opacity: 1; }
+    }
+    .vp-float-cart-left { display: flex; align-items: center; gap: 10px; }
+    .vp-float-cart-count {
+      background: #0a0a0f; color: var(--gold);
+      width: 24px; height: 24px; border-radius: 50%;
+      font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .vp-float-cart-total { font-size: 16px; font-weight: 700; }
+  }
   @media (max-width: 400px) {
     .vp-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
     .vp-card-img, .vp-card-img-placeholder { height: 90px; }
+  }
+
+  /* CART PAGE (mobile view="cart") */
+  .vp-cart-page { max-width: 540px; margin: 0 auto; padding: 24px 0 60px; }
+  .vp-cart-page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px; font-weight: 900; color: var(--text); margin-bottom: 24px;
   }
 `;
 
@@ -617,7 +616,6 @@ export default function App() {
   const [orderSent, setOrderSent] = useState(false);
   const [orderInfo, setOrderInfo] = useState({ name: "", address: "", phone: "", payment: "" });
   const [open] = useState(isOpen());
-  const [cartOpen, setCartOpen] = useState(false);
 
   const FREE_DELIVERY = 500;
   const total = cart.reduce((s, i) => s + i.price, 0);
@@ -648,7 +646,56 @@ export default function App() {
     setCart([]);
   };
 
-  // ── ADMIN ────────────────────────────────────────────────────
+  // ── CART PAGE (mobile) ───────────────────────────────────────
+  if (view === "cart") return (
+    <div className="vp-app">
+      <style>{css}</style>
+      <div className="vp-stars" />
+      <div className="vp-wrap">
+        <header className="vp-header">
+          <div className="vp-logo"><div className="vp-logo-dot" />VečerkaPlus</div>
+        </header>
+        <div className="vp-cart-page">
+          <button className="vp-back" onClick={() => setView("shop")}>← Zpět do obchodu</button>
+          <div className="vp-cart-page-title">Košík</div>
+          <div className="vp-section">
+            {cart.map((item, i) => (
+              <div key={i} className="vp-cart-row" style={{ paddingBottom: 12, marginBottom: 12, borderBottom: "1px solid var(--border)" }}>
+                <span className="vp-cart-row-emoji">{item.emoji}</span>
+                <div className="vp-cart-row-info">
+                  <div className="vp-cart-row-name">{item.name}</div>
+                  <div className="vp-cart-row-price">{item.price} Kč</div>
+                </div>
+                <button className="vp-cart-remove" onClick={() => removeFromCart(i)}>✕</button>
+              </div>
+            ))}
+            {total < FREE_DELIVERY ? (
+              <div className="vp-delivery-progress" style={{ marginTop: 8 }}>
+                <div className="vp-delivery-progress-label">
+                  <span>Doprava zdarma</span>
+                  <b>chybí {remaining} Kč</b>
+                </div>
+                <div className="vp-progress-bar">
+                  <div className="vp-progress-fill" style={{ width: `${progress}%` }} />
+                </div>
+              </div>
+            ) : (
+              <div className="vp-free-delivery-badge">✓ Doprava zdarma!</div>
+            )}
+            <div className="vp-cart-total" style={{ marginTop: 20 }}>
+              <span className="vp-cart-total-label">Celkem</span>
+              <span className="vp-cart-total-sum">{total} Kč</span>
+            </div>
+          </div>
+          <button className="vp-order-btn" style={{ marginTop: 16 }} onClick={() => setView("checkout")}>
+            Pokračovat k objednávce →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── ADMIN ─────────────────────────────────────────────────────
   if (view === "admin") return (
     <div className="vp-app">
       <style>{css}</style>
@@ -795,7 +842,7 @@ export default function App() {
             <div className="vp-badge" style={open ? {} : { color: "#e05555", background: "rgba(224,85,85,0.1)", borderColor: "rgba(224,85,85,0.25)" }}>
               {open ? "OTEVŘENO" : "ZAVŘENO"} · 20:00–5:00
             </div>
-
+            <button className="vp-admin-btn" onClick={() => setView("admin")}>⚙ Admin</button>
           </div>
         </header>
 
@@ -876,8 +923,8 @@ export default function App() {
             </div>
           </div>
 
-          <div className={`vp-cart${cartOpen ? " open" : ""}`}>
-            <div className="vp-cart-header" onClick={() => setCartOpen(!cartOpen)}>
+          <div className="vp-cart">
+            <div className="vp-cart-header">
               <div className="vp-cart-title">Košík</div>
               {cart.length > 0 && <div className="vp-cart-count">{cart.length}</div>}
             </div>
@@ -928,6 +975,16 @@ export default function App() {
           </div>
         </div>
       </div>
+      {/* Floating cart button — mobile only */}
+      {cart.length > 0 && (
+        <button className="vp-float-cart" onClick={() => setView("cart")}>
+          <div className="vp-float-cart-left">
+            <div className="vp-float-cart-count">{cart.length}</div>
+            <span>Zobrazit košík</span>
+          </div>
+          <span className="vp-float-cart-total">{total} Kč</span>
+        </button>
+      )}
     </div>
   );
 }
