@@ -728,7 +728,9 @@ export default function App() {
   const [view, setView] = useState("shop");
   const [products, setProducts] = useState([]);
   const [productsLoading, setProductsLoading] = useState(true);
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => { try { return JSON.parse(localStorage.getItem("vp_cart") || "[]"); } catch { return []; } });
+  const [addressSuggestions, setAddressSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeCat, setActiveCat] = useState("Vše");
   const [newProduct, setNewProduct] = useState({ name: "", category: "", price: "", emoji: "🛒", img: "" });
   const [orderSent, setOrderSent] = useState(false);
@@ -747,10 +749,27 @@ export default function App() {
   useEffect(() => {
     supabase.from("products").select("*").order("category").then(({ data }) => {
       if (data && data.length > 0) setProducts(data);
-      else setProducts(initialProducts); // fallback na lokální data
+      else setProducts(initialProducts);
       setProductsLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("vp_cart", JSON.stringify(cart));
+  }, [cart]);
+
+  const fetchAddressSuggestions = async (input) => {
+    if (input.length < 3) { setAddressSuggestions([]); return; }
+    try {
+      const res = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(input + " Frýdek-Místek")}&components=locality:Frýdek-Místek|country:CZ&key=AIzaSyC8EhWAIi2-BBQDEdTcBMoCoynvZ19Gd3s`
+      );
+      const data = await res.json();
+      const suggestions = (data.results || []).map(r => r.formatted_address).slice(0, 5);
+      setAddressSuggestions(suggestions);
+      setShowSuggestions(suggestions.length > 0);
+    } catch { setAddressSuggestions([]); }
+  };
 
   const addToCart = (p) => setCart([...cart, p]);
   const removeFromCart = (i) => setCart(cart.filter((_, idx) => idx !== i));
@@ -797,6 +816,7 @@ export default function App() {
 
     setOrderSent(true);
     setCart([]);
+    localStorage.removeItem("vp_cart");
   };
 
   // ── AGE VERIFICATION ────────────────────────────────────────
@@ -1052,8 +1072,35 @@ export default function App() {
               <div className="vp-section-title">Kontaktní údaje</div>
               <input className="vp-input" placeholder="Jméno a příjmení" value={orderInfo.name}
                 onChange={(e) => setOrderInfo({ ...orderInfo, name: e.target.value })} />
-              <input className="vp-input" placeholder="Adresa doručení — Frýdek‑Místek" value={orderInfo.address}
-                onChange={(e) => setOrderInfo({ ...orderInfo, address: e.target.value })} />
+              <div style={{ position: "relative" }}>
+                <input className="vp-input" placeholder="Adresa doručení — Frýdek‑Místek" value={orderInfo.address}
+                  onChange={(e) => {
+                    setOrderInfo({ ...orderInfo, address: e.target.value });
+                    fetchAddressSuggestions(e.target.value);
+                  }}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                  onFocus={() => addressSuggestions.length > 0 && setShowSuggestions(true)}
+                  autoComplete="off"
+                />
+                {showSuggestions && addressSuggestions.length > 0 && (
+                  <div style={{
+                    position: "absolute", top: "100%", left: 0, right: 0, zIndex: 100,
+                    background: "#1c1c26", border: "1px solid rgba(212,175,106,0.2)",
+                    borderRadius: 10, overflow: "hidden", boxShadow: "0 8px 24px rgba(0,0,0,0.4)"
+                  }}>
+                    {addressSuggestions.map((s, i) => (
+                      <div key={i}
+                        style={{ padding: "10px 14px", fontSize: 13, color: "#f0ece4", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+                        onMouseDown={() => { setOrderInfo({ ...orderInfo, address: s }); setShowSuggestions(false); }}
+                        onMouseEnter={e => e.target.style.background = "rgba(212,175,106,0.1)"}
+                        onMouseLeave={e => e.target.style.background = "transparent"}
+                      >
+                        📍 {s}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               <input className="vp-input" style={{ marginBottom: 0 }} placeholder="Telefon" value={orderInfo.phone}
                 onChange={(e) => setOrderInfo({ ...orderInfo, phone: e.target.value })} />
             </div>
