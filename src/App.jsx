@@ -605,6 +605,52 @@ const css = `
     font-family: 'Playfair Display', serif;
     font-size: 32px; font-weight: 900; color: var(--text); margin-bottom: 24px;
   }
+
+  /* AGE VERIFICATION */
+  .vp-age-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #0a0a0f;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .vp-age-overlay::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 40%, rgba(212,175,106,0.1) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .vp-age-box {
+    position: relative; z-index: 1;
+    text-align: center; padding: 48px 40px;
+    max-width: 440px; width: 90%;
+    background: #13131a;
+    border: 1px solid rgba(212,175,106,0.2);
+    border-radius: 24px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+  }
+  .vp-age-icon { font-size: 56px; margin-bottom: 8px; filter: drop-shadow(0 4px 16px rgba(212,175,106,0.3)); }
+  .vp-age-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--gold); margin-bottom: 28px; }
+  .vp-age-title { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--text); line-height: 1.1; margin-bottom: 12px; }
+  .vp-age-sub { color: var(--muted); font-size: 14px; font-weight: 300; line-height: 1.6; margin-bottom: 36px; }
+  .vp-age-btns { display: flex; gap: 12px; }
+  .vp-age-yes {
+    flex: 1; padding: 15px;
+    background: linear-gradient(135deg, var(--gold) 0%, #b8923e 100%);
+    color: #0a0a0f; border: none; border-radius: 12px;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    box-shadow: 0 4px 20px rgba(212,175,106,0.3); transition: all 0.2s;
+  }
+  .vp-age-yes:hover { box-shadow: 0 8px 32px rgba(212,175,106,0.5); transform: translateY(-1px); }
+  .vp-age-no {
+    flex: 1; padding: 15px;
+    background: transparent; color: var(--muted);
+    border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;
+    font-size: 15px; font-weight: 500; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+  }
+  .vp-age-no:hover { border-color: rgba(224,85,85,0.4); color: #e05555; }
+  .vp-age-note { font-size: 11px; color: var(--muted); margin-top: 20px; line-height: 1.5; }
 `;
 
 export default function App() {
@@ -617,6 +663,7 @@ export default function App() {
   const [orderSent, setOrderSent] = useState(false);
   const [orderInfo, setOrderInfo] = useState({ name: "", address: "", phone: "", payment: "" });
   const [open] = useState(isOpen());
+  const [ageVerified, setAgeVerified] = useState(() => sessionStorage.getItem("vp_age") === "1");
 
   const FREE_DELIVERY = 500;
   const total = cart.reduce((s, i) => s + i.price, 0);
@@ -675,6 +722,31 @@ export default function App() {
     setOrderSent(true);
     setCart([]);
   };
+
+  // ── AGE VERIFICATION ────────────────────────────────────────
+  if (!ageVerified) return (
+    <div className="vp-app">
+      <style>{css}</style>
+      <div className="vp-stars" />
+      <div className="vp-age-overlay">
+        <div className="vp-age-box">
+          <div className="vp-age-icon">🌙</div>
+          <div className="vp-age-logo">VečerkaPlus</div>
+          <div className="vp-age-title">Je ti 18+?</div>
+          <div className="vp-age-sub">Tento web prodává alkohol a tabák.<br />Vstup je povolen pouze osobám starším 18 let.</div>
+          <div className="vp-age-btns">
+            <button className="vp-age-yes" onClick={() => { sessionStorage.setItem("vp_age", "1"); setAgeVerified(true); }}>
+              Ano, je mi 18+
+            </button>
+            <button className="vp-age-no" onClick={() => window.location.href = "https://google.com"}>
+              Ne, jsem mladší
+            </button>
+          </div>
+          <div className="vp-age-note">Vstupem potvrzujete, že jste starší 18 let a souhlasíte s podmínkami použití.</div>
+        </div>
+      </div>
+    </div>
+  );
 
   // ── CART PAGE (mobile) ───────────────────────────────────────
   if (view === "cart") return (
