@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const initialProducts = [
   { id: 1,  name: "Pilsner Urquell 0,5l",        category: "Pivo",     price: 29,  emoji: "🍺", img: "https://www.pilsnerurquell.com/sites/pilsnerurquell/files/2023-09/PU_bottle_500ml.png" },
@@ -697,6 +698,7 @@ const css = `
 `;
 
 export default function App() {
+  const navigate = useNavigate();
   const [view, setView] = useState("shop");
   const [products, setProducts] = useState([]);
   const [productsLoading, setProductsLoading] = useState(true);
@@ -1214,9 +1216,8 @@ export default function App() {
         <footer className="vp-footer">
           <div className="vp-footer-logo">🌙 VečerkaPlus</div>
           <div className="vp-footer-links">
-            <span className="vp-footer-link" onClick={() => setView("kontakt")}>Kontakt</span>
-            <span className="vp-footer-link" onClick={() => setView("podminky")}>Obchodní podmínky</span>
-            <span className="vp-footer-link" onClick={() => setView("podminky")}>GDPR</span>
+            <span className="vp-footer-link" onClick={() => navigate("/kontakt")}>Kontakt</span>
+            <span className="vp-footer-link" onClick={() => navigate("/podminky")}>Obchodní podmínky & GDPR</span>
           </div>
           <div className="vp-footer-copy">
             © 2025 VečerkaPlus · Filip Chytil · IČO: 19845863<br />
