@@ -651,6 +651,49 @@ const css = `
   }
   .vp-age-no:hover { border-color: rgba(224,85,85,0.4); color: #e05555; }
   .vp-age-note { font-size: 11px; color: var(--muted); margin-top: 20px; line-height: 1.5; }
+
+  /* FOOTER */
+  .vp-footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 16px; margin-top: 40px;
+  }
+  .vp-footer-logo { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: var(--gold); }
+  .vp-footer-links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+  .vp-footer-link { color: var(--muted); font-size: 13px; cursor: pointer; text-decoration: none; transition: color 0.2s; }
+  .vp-footer-link:hover { color: var(--gold); }
+  .vp-footer-copy { color: var(--muted); font-size: 11px; text-align: center; line-height: 1.6; }
+
+  /* LEGAL / CONTACT PAGES */
+  .vp-legal-wrap { max-width: 700px; margin: 0 auto; padding: 32px 24px 80px; }
+  .vp-legal-title { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; color: var(--text); margin-bottom: 8px; }
+  .vp-legal-sub { color: var(--muted); font-size: 13px; margin-bottom: 32px; }
+  .vp-legal-section { margin-bottom: 28px; }
+  .vp-legal-h { font-size: 15px; font-weight: 700; color: var(--gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .vp-legal-p { color: var(--text-dim, #aaa); font-size: 14px; line-height: 1.8; }
+  .vp-contact-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 12px;
+    margin-bottom: 24px;
+  }
+  .vp-contact-row { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text); }
+  .vp-contact-icon { font-size: 20px; width: 28px; text-align: center; }
+  .vp-contact-label { color: var(--muted); font-size: 12px; }
+
+  /* GOPAY */
+  .vp-gopay-btn {
+    width: 100%; padding: 16px; margin-top: 8px;
+    background: linear-gradient(135deg, #00b4e6 0%, #0077cc 100%);
+    color: #fff; border: none; border-radius: 12px;
+    font-size: 16px; font-weight: 700; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    box-shadow: 0 4px 20px rgba(0,119,204,0.3); transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .vp-gopay-btn:hover { box-shadow: 0 8px 32px rgba(0,119,204,0.5); transform: translateY(-1px); }
+  .vp-gopay-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .vp-gopay-note { font-size: 11px; color: var(--muted); text-align: center; margin-top: 8px; }
 `;
 
 export default function App() {
@@ -743,6 +786,85 @@ export default function App() {
             </button>
           </div>
           <div className="vp-age-note">Vstupem potvrzujete, že jste starší 18 let a souhlasíte s podmínkami použití.</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── OBCHODNÍ PODMÍNKY ────────────────────────────────────────
+  if (view === "podminky") return (
+    <div className="vp-app">
+      <style>{css}</style>
+      <div className="vp-stars" />
+      <div className="vp-wrap">
+        <header className="vp-header">
+          <div className="vp-logo"><div className="vp-logo-dot" />VečerkaPlus</div>
+        </header>
+        <div className="vp-legal-wrap">
+          <button className="vp-back" onClick={() => setView("shop")}>← Zpět do obchodu</button>
+          <div className="vp-legal-title">Obchodní podmínky</div>
+          <div className="vp-legal-sub">Platné od 1. 1. 2025 · VečerkaPlus</div>
+
+          {[
+            ["1. Provozovatel", `VečerkaPlus, Filip Chytil, IČO: 19845863, se sídlem Frýdek-Místek. Kontakt: vecerkaplus@gmail.com`],
+            ["2. Předmět služby", `VečerkaPlus provozuje noční rozvoz alkoholu, tabáku a dalšího zboží na území Frýdku-Místku. Objednávky jsou přijímány výhradně v době provozu (20:00–5:00).`],
+            ["3. Věkové omezení", `Prodej alkoholu a tabáku je povolen pouze osobám starším 18 let. Při doručení je kurýr oprávněn požadovat doklad totožnosti. V případě neprokázání věku nebude zboží předáno a objednávka bude zrušena bez nároku na vrácení dopravného.`],
+            ["4. Objednávka a platba", `Objednávka je závazná po jejím potvrzení. Platba je možná hotově při doručení nebo online kartou přes platební bránu GoPay. Ceny jsou uvedeny včetně DPH.`],
+            ["5. Doručení", `Odhadovaná doba doručení je 40–60 minut. Doručujeme pouze na území Frýdku-Místku. Doprava je zdarma při objednávce nad 500 Kč, jinak je účtováno dopravné dle aktuálního ceníku.`],
+            ["6. Reklamace a vrácení zboží", `V případě závady nebo nesprávně doručeného zboží kontaktujte nás neprodleně na vecerkaplus@gmail.com. Reklamace alkoholu a tabáku jsou řešeny individuálně v souladu s platnou legislativou.`],
+            ["7. Ochrana osobních údajů", `Vaše osobní údaje (jméno, adresa, telefon) jsou zpracovávány výhradně za účelem vyřízení objednávky a nejsou předávány třetím stranám. Zpracování probíhá v souladu s GDPR.`],
+            ["8. Závěrečná ustanovení", `Tyto podmínky se řídí právním řádem České republiky. Provozovatel si vyhrazuje právo podmínky měnit. Aktuální verze je vždy dostupná na vecerkaplus.cz.`],
+          ].map(([h, p]) => (
+            <div className="vp-legal-section" key={h}>
+              <div className="vp-legal-h">{h}</div>
+              <div className="vp-legal-p">{p}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── KONTAKT ──────────────────────────────────────────────────
+  if (view === "kontakt") return (
+    <div className="vp-app">
+      <style>{css}</style>
+      <div className="vp-stars" />
+      <div className="vp-wrap">
+        <header className="vp-header">
+          <div className="vp-logo"><div className="vp-logo-dot" />VečerkaPlus</div>
+        </header>
+        <div className="vp-legal-wrap">
+          <button className="vp-back" onClick={() => setView("shop")}>← Zpět do obchodu</button>
+          <div className="vp-legal-title">Kontakt</div>
+          <div className="vp-legal-sub">Jsme tu pro vás každou noc od 20:00 do 5:00</div>
+
+          <div className="vp-contact-card">
+            {[
+              ["🏢", "Provozovatel", "Filip Chytil · IČO: 19845863"],
+              ["📍", "Adresa", "Frýdek-Místek"],
+              ["📧", "Email", "vecerkaplus@gmail.com"],
+              ["🕗", "Provozní doba", "každý den 20:00 – 5:00"],
+              ["🛵", "Rozvozová oblast", "Frýdek-Místek"],
+            ].map(([icon, label, value]) => (
+              <div className="vp-contact-row" key={label}>
+                <span className="vp-contact-icon">{icon}</span>
+                <div>
+                  <div className="vp-contact-label">{label}</div>
+                  <div>{value}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="vp-legal-section">
+            <div className="vp-legal-h">Napište nám</div>
+            <div className="vp-legal-p">
+              Máte dotaz, problém s objednávkou nebo zpětnou vazbu? Napište nám na{" "}
+              <a href="mailto:vecerkaplus@gmail.com" style={{ color: "var(--gold)" }}>vecerkaplus@gmail.com</a>{" "}
+              — odpovídáme co nejrychleji.
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -897,7 +1019,7 @@ export default function App() {
             <div className="vp-section">
               <div className="vp-section-title">Způsob platby</div>
               <div className="vp-payment-options">
-                {[["💳", "Online kartou"], ["💵", "Hotově při doručení"]].map(([icon, label]) => (
+                {[["💵", "Hotově při doručení"], ["💳", "Online kartou (GoPay)"]].map(([icon, label]) => (
                   <button key={label}
                     className={`vp-payment-opt${orderInfo.payment === label ? " active" : ""}`}
                     onClick={() => setOrderInfo({ ...orderInfo, payment: label })}>
@@ -905,6 +1027,12 @@ export default function App() {
                   </button>
                 ))}
               </div>
+              {orderInfo.payment === "Online kartou (GoPay)" && (
+                <div style={{ marginTop: 12, padding: 12, background: "var(--surface2)", borderRadius: 10, fontSize: 13, color: "var(--muted)", textAlign: "center" }}>
+                  💳 Po odeslání objednávky budete přesměrováni na zabezpečenou platební bránu GoPay.<br />
+                  <span style={{ fontSize: 11, marginTop: 4, display: "block" }}>Přijímáme Visa, Mastercard, Apple Pay, Google Pay a bankovní převod.</span>
+                </div>
+              )}
             </div>
 
             <div className="vp-section">
@@ -1081,6 +1209,21 @@ export default function App() {
             )}
           </div>
         </div>
+
+        {/* FOOTER */}
+        <footer className="vp-footer">
+          <div className="vp-footer-logo">🌙 VečerkaPlus</div>
+          <div className="vp-footer-links">
+            <span className="vp-footer-link" onClick={() => setView("kontakt")}>Kontakt</span>
+            <span className="vp-footer-link" onClick={() => setView("podminky")}>Obchodní podmínky</span>
+            <span className="vp-footer-link" onClick={() => setView("podminky")}>GDPR</span>
+          </div>
+          <div className="vp-footer-copy">
+            © 2025 VečerkaPlus · Filip Chytil · IČO: 19845863<br />
+            Noční rozvoz alkoholu a tabáku · Frýdek-Místek
+          </div>
+        </footer>
+
       </div>
       {/* Floating cart button — mobile only */}
       {cart.length > 0 && (
