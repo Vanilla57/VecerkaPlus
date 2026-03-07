@@ -625,12 +625,6 @@ export default function App() {
   const removeFromCart = (i) => setCart(cart.filter((_, idx) => idx !== i));
   const filtered = activeCat === "Vše" ? products : products.filter((p) => p.category === activeCat);
 
-  const addProduct = () => {
-    if (!newProduct.name || !newProduct.price) return;
-    setProducts([...products, { ...newProduct, id: Date.now(), price: Number(newProduct.price) }]);
-    setNewProduct({ name: "", category: "", price: "", emoji: "🛒" });
-  };
-
   const sendOrder = async () => {
     if (!orderInfo.name || !orderInfo.payment) return;
     const { error } = await supabase.from("orders").insert({
@@ -642,6 +636,33 @@ export default function App() {
       total: total,
     });
     if (error) { alert("Chyba při odesílání: " + error.message); return; }
+
+    // Odeslat email notifikaci
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer re_82iTvd2Q_6527FLrws2JUEGXuKS2WQkz7"
+      },
+      body: JSON.stringify({
+        from: "VečerkaPlus <info@vecerkaplus.cz>",
+        to: "info@vecerkaplus.cz",
+        subject: `🛵 Nová objednávka — ${orderInfo.name} — ${total} Kč`,
+        html: `
+          <h2>Nová objednávka</h2>
+          <p><b>Jméno:</b> ${orderInfo.name}</p>
+          <p><b>Adresa:</b> ${orderInfo.address}</p>
+          <p><b>Telefon:</b> ${orderInfo.phone}</p>
+          <p><b>Platba:</b> ${orderInfo.payment}</p>
+          <hr/>
+          <h3>Položky:</h3>
+          ${cart.map(i => `<p>${i.emoji} ${i.name} — ${i.price} Kč</p>`).join("")}
+          <hr/>
+          <h3>Celkem: ${total} Kč</h3>
+        `
+      })
+    });
+
     setOrderSent(true);
     setCart([]);
   };
